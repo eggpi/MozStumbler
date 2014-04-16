@@ -103,7 +103,7 @@ final class Reporter extends BroadcastReceiver {
         } else if (GPSScanner.GPS_SCANNER_EXTRA_SUBJECT.equals(subject)) {
             reportCollectedLocation();
             Location newPosition = intent.getParcelableExtra(GPSScanner.GPS_SCANNER_ARG_LOCATION);
-            mBundle = newPosition != null ? new StumblerBundle(newPosition) : mBundle;
+            mBundle = newPosition != null ? new StumblerBundle(newPosition, mPhoneType) : mBundle;
         } else {
             Log.d(LOGTAG, "Intent ignored with Subject: " + subject);
             return; // Intent not aimed at the Reporter (it is possibly for UI instead)
