@@ -1,7 +1,5 @@
 package org.mozilla.mozstumbler;
 
-import org.mozilla.mozstumbler.sync.SyncUtils;
-
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -18,16 +16,14 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-
 import java.util.Calendar;
+import org.mozilla.mozstumbler.sync.SyncUtils;
 
 public final class ScannerService extends Service {
-    public static final String  MESSAGE_TOPIC   = "org.mozilla.mozstumbler.serviceMessage";
-
     private static final String LOGTAG          = ScannerService.class.getName();
     private static final int    NOTIFICATION_ID = 1;
     private static final int    WAKE_TIMEOUT    = 5 * 1000;
-    private static final String INTENT_TURN_OFF = MESSAGE_TOPIC + ".TURN_ME_OFF";
+    private static final String INTENT_TURN_OFF = "TURN_ME_OFF"; // FIXME garvan: review/cleanup this message usage
     private Scanner             mScanner;
     private Reporter            mReporter;
     private LooperThread        mLooper;

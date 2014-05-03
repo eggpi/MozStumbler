@@ -67,7 +67,7 @@
 
         <receiver android:name=".StumblerBundleReceiver">
             <intent-filter>
-                <action android:name="org.mozilla.mozstumbler.stumblerBundle"/>
+                <action android:name="org.mozilla.mozstumbler.intent.action.STUMBLER_BUNDLE"/>
             </intent-filter>
         </receiver>
 
