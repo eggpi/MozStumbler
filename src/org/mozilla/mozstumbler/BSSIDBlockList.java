@@ -2,11 +2,10 @@ package org.mozilla.mozstumbler;
 
 import android.net.wifi.ScanResult;
 import android.util.Log;
-
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-final class BSSIDBlockList {
+final public class BSSIDBlockList {
     private static final String  LOGTAG = BSSIDBlockList.class.getName();
     private static final String  NULL_BSSID        = "000000000000";
     private static final String  WILDCARD_BSSID    = "ffffffffffff";
@@ -30,7 +29,7 @@ final class BSSIDBlockList {
     private BSSIDBlockList() {
     }
 
-    static boolean contains(ScanResult scanResult) {
+    public static boolean contains(ScanResult scanResult) {
         String BSSID = scanResult.BSSID;
         if (BSSID == null || NULL_BSSID.equals(BSSID) || WILDCARD_BSSID.equals(BSSID)) {
             return true; // blocked!
@@ -50,7 +49,7 @@ final class BSSIDBlockList {
         return false; // OK
     }
 
-    static String canonicalizeBSSID(String BSSID) {
+    public static String canonicalizeBSSID(String BSSID) {
         if (BSSID == null) {
             return "";
         }
@@ -62,7 +61,7 @@ final class BSSIDBlockList {
         // Some devices may return BSSIDs with '-' or '.' delimiters.
         BSSID = BSSID.toLowerCase(Locale.US).replace(":", "")
                                             .replace("-", "")
-                                            .replace(".", "");
+                                            .replace("", "");
 
         return isCanonicalBSSID(BSSID) ? BSSID : "";
     }
