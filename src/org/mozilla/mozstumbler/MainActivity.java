@@ -41,12 +41,10 @@ public final class MainActivity extends FragmentActivity {
     private static final String LOGTAG = MainActivity.class.getName();
 
     public static final String ACTION_BASE = SharedConstants.ACTION_NAMESPACE + ".MainActivity.";
-
+    public static final String ACTION_UPDATE_UI = ACTION_BASE + "UPDATE_UI";
+    
     /** if mConnectionRemote exists, start scanning, otherwise do nothing  */
     public static final String ACTION_UNPAUSE_SCANNING = ACTION_BASE + "UNPAUSE_SCANNING";
-
-    public static final String ACTION_UPDATE_UI = ACTION_BASE + "UPDATE_UI";
-
 
     private static final String LEADERBOARD_URL = "https://location.services.mozilla.com/leaders";
     private static final String INTENT_TURN_OFF = "org.mozilla.mozstumbler.turnMeOff";
