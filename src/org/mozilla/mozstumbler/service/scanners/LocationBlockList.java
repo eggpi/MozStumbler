@@ -1,4 +1,4 @@
-package org.mozilla.mozstumbler.blocklist;
+package org.mozilla.mozstumbler.service.scanners;
 
 import android.content.Context;
 import android.location.Location;

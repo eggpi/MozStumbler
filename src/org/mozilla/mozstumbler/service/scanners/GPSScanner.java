@@ -11,7 +11,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
-import org.mozilla.mozstumbler.blocklist.LocationBlockList;
+
 import org.mozilla.mozstumbler.SharedConstants;
 import org.mozilla.mozstumbler.Prefs;
 
