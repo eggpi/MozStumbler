@@ -49,6 +49,7 @@ public final class MainActivity extends FragmentActivity {
 
     public static final String ACTION_BASE = SharedConstants.ACTION_NAMESPACE + ".MainActivity.";
     public static final String ACTION_UPDATE_UI = ACTION_BASE + "UPDATE_UI";
+    public static final String ACTION_STOP_SCANNING = ACTION_BASE + "STOP_SCANNING";
 
     /** if mConnectionRemote exists, start scanning, otherwise do nothing  */
     public static final String ACTION_UNPAUSE_SCANNING = ACTION_BASE + "UNPAUSE_SCANNING";
@@ -77,6 +78,7 @@ public final class MainActivity extends FragmentActivity {
                 intentFilter.addAction(GPSScanner.ACTION_GPS_UPDATED);
                 intentFilter.addAction(MainActivity.ACTION_UNPAUSE_SCANNING);
                 intentFilter.addAction(MainActivity.ACTION_UPDATE_UI);
+                intentFilter.addAction(MainActivity.ACTION_STOP_SCANNING);
                 registerReceiver(this, intentFilter);
                 mReceiverIsRegistered = true;
             }
@@ -106,6 +108,8 @@ public final class MainActivity extends FragmentActivity {
             } else if (action.equals(MainActivity.ACTION_UNPAUSE_SCANNING) &&
                        null != mConnectionRemote) {
                 startScanning();
+            } else if (action.equals(MainActivity.ACTION_STOP_SCANNING)) {
+                stopScanning();
             }
 
             updateUI();
