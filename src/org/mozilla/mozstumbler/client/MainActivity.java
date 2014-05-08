@@ -48,7 +48,6 @@ public final class MainActivity extends FragmentActivity {
     private static final String LOGTAG = MainActivity.class.getName();
 
     public static final String ACTION_BASE = SharedConstants.ACTION_NAMESPACE + ".MainActivity.";
-    public static final String ACTION_UPDATE_UI = ACTION_BASE + "UPDATE_UI";
 
     /** if mConnectionRemote exists, start scanning, otherwise do nothing  */
     public static final String ACTION_UNPAUSE_SCANNING = ACTION_BASE + "UNPAUSE_SCANNING";
@@ -76,7 +75,6 @@ public final class MainActivity extends FragmentActivity {
                 intentFilter.addAction(CellScanner.ACTION_CELLS_SCANNED);
                 intentFilter.addAction(GPSScanner.ACTION_GPS_UPDATED);
                 intentFilter.addAction(MainActivity.ACTION_UNPAUSE_SCANNING);
-                intentFilter.addAction(MainActivity.ACTION_UPDATE_UI);
                 registerReceiver(this, intentFilter);
                 mReceiverIsRegistered = true;
             }
