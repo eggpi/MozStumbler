@@ -82,8 +82,7 @@
         </service>
 
         <service
-            android:name=".service.sync.SyncService"
-            android:process=":.ScannerService">
+            android:name=".service.sync.SyncService">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter"/>
             </intent-filter>
@@ -95,8 +94,7 @@
             android:name=".service.Provider"
             android:authorities="org.mozilla.mozstumbler.provider"
             android:exported="false"
-            android:syncable="true"
-            android:process=":.ScannerService" />
+            android:syncable="true"/>
 
     </application>
 
