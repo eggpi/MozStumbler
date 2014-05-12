@@ -11,7 +11,7 @@ import android.util.Log;
 import java.util.List;
 import java.util.Map;
 import org.mozilla.mozstumbler.SharedConstants;
-import org.mozilla.mozstumbler.StumblerBundle;
+import org.mozilla.mozstumbler.service.StumblerBundle;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellInfo;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellScanner;
 import org.mozilla.mozstumbler.service.scanners.GPSScanner;
@@ -149,9 +149,8 @@ final class Reporter extends BroadcastReceiver {
             return;
         }
 
-        Intent broadcast = new Intent("org.mozilla.mozstumbler.intent.action.STUMBLER_BUNDLE"); // FIXME make into a constant
+        Intent broadcast = new Intent(StumblerService.ACTION_STUMBLER_BUNDLE);
         broadcast.putExtra("StumblerBundle", mBundle);
-        // send to StumblerBundleReceiver
         mContext.sendBroadcast(broadcast);
 
         mBundle.getGpsPosition().setTime(System.currentTimeMillis());
