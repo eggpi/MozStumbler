@@ -40,7 +40,6 @@ import org.mozilla.mozstumbler.SharedConstants;
 import org.mozilla.mozstumbler.service.StumblerService;
 import org.mozilla.mozstumbler.service.scanners.WifiScanner;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellScanner;
-import org.mozilla.mozstumbler.Prefs;
 import org.mozilla.mozstumbler.DatabaseContract;
 import org.mozilla.mozstumbler.client.sync.SyncUtils;
 
@@ -57,7 +56,6 @@ public final class MainActivity extends FragmentActivity {
     private static final String INTENT_TURN_OFF = "org.mozilla.mozstumbler.turnMeOff";
     private static final int    NOTIFICATION_ID = 1;
 
-    private Prefs                    mPrefs;
     private StumblerService mConnectionRemote;
     private ServiceConnection        mConnection;
     private ServiceBroadcastReceiver mReceiver;
@@ -115,8 +113,10 @@ public final class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mGeofenceHere = mPrefs.getGeofenceHere();
-        if (mGeofenceHere) mPrefs.setGeofenceState(false);
+        mGeofenceHere = mConnectionRemote.getPrefs().getGeofenceHere();
+        if (mGeofenceHere)
+            mConnectionRemote.getPrefs().setGeofenceEnabled(false);
+
         setGeofenceText();
         mNeedsUpdate = true;
     }
@@ -126,8 +126,6 @@ public final class MainActivity extends FragmentActivity {
         if (BuildConfig.DEBUG) enableStrictMode();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        new Prefs(this).setDefaultValues();
 
         SyncUtils.CreateSyncAccount(this);
 
@@ -170,7 +168,7 @@ public final class MainActivity extends FragmentActivity {
 
         mReceiver = new ServiceBroadcastReceiver();
         mReceiver.register();
-        mPrefs = new Prefs(this);
+
         mConnection = new ServiceConnection() {
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 StumblerService.StumblerBinder serviceBinder = (StumblerService.StumblerBinder) binder;
@@ -270,10 +268,10 @@ public final class MainActivity extends FragmentActivity {
         mNeedsUpdate = false;
         if (mGeofenceHere) {
             if (mGpsFixes > 0 && locationsScanned > 0) {
-                mPrefs.setLatLonPref((float)latitude,(float)longitude);
-                mPrefs.setGeofenceState(true);
+                mConnectionRemote.getPrefs().setGeofenceLatLong((float)latitude, (float)longitude);
+                mConnectionRemote.getPrefs().setGeofenceEnabled(true);
+                mConnectionRemote.getPrefs().setGeofenceHere(false);
                 mGeofenceHere = false;
-                mPrefs.setGeofenceHere(false);
                 setGeofenceText();
             }
             mNeedsUpdate = true;
@@ -313,6 +311,7 @@ public final class MainActivity extends FragmentActivity {
                 startActivity(new Intent(getApplication(), AboutActivity.class));
                 return true;
             case R.id.action_preferences:
+                PreferencesScreen.setPrefs(mConnectionRemote.getPrefs());
                 startActivity(new Intent(getApplication(), PreferencesScreen.class));
                 return true;
             case R.id.action_view_leaderboard:
@@ -386,8 +385,9 @@ public final class MainActivity extends FragmentActivity {
     }
 
     private void setGeofenceText() {
-        if (mPrefs.getGeofenceState()) {
-            formatTextView(R.id.geofence_status, R.string.geofencing_on, mPrefs.getLat(),mPrefs.getLon());
+        if (mConnectionRemote.getPrefs().getGeofenceEnabled()) {
+            float latLong[] = mConnectionRemote.getPrefs().getGeofenceLatLong();
+            formatTextView(R.id.geofence_status, R.string.geofencing_on, latLong[0], latLong[1]);
         } else {
             formatTextView(R.id.geofence_status, R.string.geofencing_off);
         }
