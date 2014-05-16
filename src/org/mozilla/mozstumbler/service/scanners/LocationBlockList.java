@@ -4,7 +4,7 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Log;
 import org.mozilla.mozstumbler.DateTimeUtils;
-import org.mozilla.mozstumbler.Prefs;
+import org.mozilla.mozstumbler.service.Prefs;
 
 
 public final class LocationBlockList {
@@ -17,9 +17,8 @@ public final class LocationBlockList {
     private static final double GEOFENCE_RADIUS = 0.01;      // .01 degrees is approximately 1km
 
     private Context mContext;
-    private double mBlockedLat;
-    private double mBlockedLon;
-    private boolean mGeofencingState;
+    private Location mBlockedLocation;
+    private boolean mGeofencingEnabled;
     private boolean mIsGeofenced = false;
 
     public LocationBlockList(Context context) {
@@ -29,9 +28,8 @@ public final class LocationBlockList {
 
     public void update_blocks()    {
         Prefs prefs = new Prefs(mContext);
-        mBlockedLat = prefs.getLat();
-        mBlockedLon = prefs.getLon();
-        mGeofencingState = prefs.getGeofenceState();
+        mBlockedLocation = prefs.getGeofenceLocation();
+        mGeofencingEnabled = prefs.getGeofenceEnabled();
     }
 
     public boolean contains(Location location) {
@@ -87,10 +85,12 @@ public final class LocationBlockList {
             Log.w(LOGTAG, "Bogus timestamp: " + timestamp + " (" + DateTimeUtils.formatTime(timestamp) + ")");
         }
 
-        if (mGeofencingState && Math.abs(location.getLatitude()-mBlockedLat) < GEOFENCE_RADIUS && Math.abs(location.getLongitude()-mBlockedLon) < GEOFENCE_RADIUS) {
+        if (mGeofencingEnabled &&
+                Math.abs(location.getLatitude() - mBlockedLocation.getLatitude()) < GEOFENCE_RADIUS &&
+                Math.abs(location.getLongitude() - mBlockedLocation.getLongitude()) < GEOFENCE_RADIUS) {
             block = true;
             mIsGeofenced = true;
-            Log.i(LOGTAG, "Hit the geofence: " + mBlockedLat +" / " + mBlockedLon);
+            Log.i(LOGTAG, "Hit the geofence: " + mBlockedLocation.getLatitude() +" / " + mBlockedLocation.getLongitude());
         }
 
         return block;

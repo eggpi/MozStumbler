@@ -1,15 +1,21 @@
-package org.mozilla.mozstumbler;
+package org.mozilla.mozstumbler.service;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.Build;
 import android.os.Build.VERSION;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
-//TODO Make Prefs client-side only
+import org.mozilla.mozstumbler.BuildConfig;
+import org.mozilla.mozstumbler.R;
+import org.mozilla.mozstumbler.SharedConstants;
+
+
 public final class Prefs {
     private static final String     LOGTAG        = Prefs.class.getName();
     public  static final String     PREFS_FILE    = Prefs.class.getName();
@@ -27,16 +33,16 @@ public final class Prefs {
 
     public Prefs(Context context) {
         mContext = context;
+        setDefaultValues();
     }
 
     @SuppressLint("InlinedApi")
     public void setDefaultValues() {
-        final SharedPreferences prefs = getPrefs();
-        if (prefs.getInt(VALUES_VERSION_PREF, -1) != BuildConfig.VERSION_CODE) {
+        if (getPrefs().getInt(VALUES_VERSION_PREF, -1) != BuildConfig.VERSION_CODE) {
             Log.i(LOGTAG, "Version of the application has changed. Updating default values.");
-            PreferenceManager.setDefaultValues(mContext, PREFS_FILE,
-                    Context.MODE_MULTI_PROCESS, R.xml.preferences, true);
-            prefs.edit().putInt(VALUES_VERSION_PREF, BuildConfig.VERSION_CODE).commit();
+            getPrefs().edit().clear(); // assume old preferences no longer map the the new system
+            getPrefs().edit().putInt(VALUES_VERSION_PREF, BuildConfig.VERSION_CODE).commit();
+            getPrefs().edit().commit();
         }
     }
 
@@ -44,40 +50,38 @@ public final class Prefs {
     /// Setters
     ///
 
-    public void setGeofenceState(boolean state) {
-        setBoolPref(GEOFENCE_SWITCH,state);
+    public void setGeofenceEnabled(boolean state) {
+        setBoolPref(GEOFENCE_SWITCH, state);
     }
 
     public void setGeofenceHere(boolean flag) {
-        setBoolPref(GEOFENCE_HERE,flag);
+        setBoolPref(GEOFENCE_HERE, flag);
     }
 
-    public void setLatLonPref(float la, float lo) {
+    public void setGeofenceLocation(Location location) {
         SharedPreferences.Editor editor = getPrefs().edit();
-        editor.putFloat(LAT_PREF,la);
-        editor.putFloat(LON_PREF,lo);
+        editor.putFloat(LAT_PREF, (float)location.getLatitude());
+        editor.putFloat(LON_PREF, (float) location.getLongitude());
         apply(editor);
-        Log.d(LOGTAG, "Geofence set: " + la + "," + lo);
     }
 
     ///
     /// Getters
     ///
 
-    public boolean getGeofenceState() {
+    public boolean getGeofenceEnabled() {
         return getBoolPref(GEOFENCE_SWITCH);
     }
 
     public boolean getGeofenceHere() {
-        return getBoolPref(GEOFENCE_HERE,false);
+        return getBoolPref(GEOFENCE_HERE);
     }
 
-    public float getLat() {
-        return getPrefs().getFloat(LAT_PREF, 0);
-    }
-
-    public float getLon() {
-        return getPrefs().getFloat(LON_PREF,0);
+    public Location getGeofenceLocation() {
+        Location loc = new Location(SharedConstants.LOCATION_ORIGIN_INTERNAL);
+        loc.setLatitude(getPrefs().getFloat(LAT_PREF, 0));
+        loc.setLongitude(getPrefs().getFloat(LON_PREF,0));
+        return loc;
     }
 
     public String getNickname() {
@@ -89,7 +93,7 @@ public final class Prefs {
     }
 
     public boolean getWifi() {
-        return getBoolPref(WIFI_ONLY);
+        return getBoolPref(WIFI_ONLY, true);
     }
 
     public boolean getWifiScanAlways() {
@@ -99,7 +103,6 @@ public final class Prefs {
     ///
     /// Privates
     ///
-
 
     private String getStringPref(String key) {
         return getPrefs().getString(key, null);

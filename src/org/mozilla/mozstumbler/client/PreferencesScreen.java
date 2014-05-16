@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,7 +15,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.text.TextUtils;
 import org.mozilla.mozstumbler.R;
-import org.mozilla.mozstumbler.Prefs;
+import org.mozilla.mozstumbler.service.Prefs;
 
 public class PreferencesScreen extends PreferenceActivity {
     private static final int REQUEST_CODE_WIFI_SCAN_ALWAYS = 1;
@@ -23,18 +24,23 @@ public class PreferencesScreen extends PreferenceActivity {
     private CheckBoxPreference mGeofenceSwitch;
     private Preference mGeofenceHere;
     private CheckBoxPreference mWifiScanAlwaysSwitch;
-    private Prefs mPrefs;
+
+    private static Prefs sPrefs;
+
+    /** Precondition to using this class, call this method to set Prefs */
+    public static void setPrefs(Prefs p) {
+        sPrefs = p;
+    }
 
     @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getPreferenceManager().setSharedPreferencesName(Prefs.PREFS_FILE);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD) {
-            getPreferenceManager().setSharedPreferencesMode(MODE_MULTI_PROCESS);
-        }
+        assert(sPrefs != null);
+
         addPreferencesFromResource(R.xml.preferences);
+
         CheckBoxPreference mWifiPreference;
         mNicknamePreference = (EditTextPreference) getPreferenceManager().findPreference("nickname");
         mWifiPreference = (CheckBoxPreference) getPreferenceManager().findPreference("wifi_only");
@@ -42,14 +48,14 @@ public class PreferencesScreen extends PreferenceActivity {
         mGeofenceHere = getPreferenceManager().findPreference("geofence_here");
         mWifiScanAlwaysSwitch = (CheckBoxPreference)getPreferenceManager().findPreference(Prefs.WIFI_SCAN_ALWAYS);
 
-        mPrefs = new Prefs(this);
-
-        setNicknamePreferenceTitle(mPrefs.getNickname());
-        mWifiPreference.setChecked(mPrefs.getWifi());
+        setNicknamePreferenceTitle(sPrefs.getNickname());
+        mWifiPreference.setChecked(sPrefs.getWifi());
         setGeofenceSwitchTitle();
-        boolean geofence_here = mPrefs.getGeofenceHere();
-        if(geofence_here) { mPrefs.setGeofenceState(true); }
-        mGeofenceSwitch.setChecked(mPrefs.getGeofenceState());
+        boolean geofence_here = sPrefs.getGeofenceHere();
+        if(geofence_here) {
+            sPrefs.setGeofenceEnabled(true);
+        }
+        mGeofenceSwitch.setChecked(sPrefs.getGeofenceEnabled());
         setGeofenceHereDesc(geofence_here);
 
         setPreferenceListener();
@@ -77,10 +83,10 @@ public class PreferencesScreen extends PreferenceActivity {
         mGeofenceHere.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                mPrefs.setGeofenceHere(true);
+                sPrefs.setGeofenceHere(true);
                 setGeofenceHereDesc(true);
                 mGeofenceSwitch.setChecked(true);
-                mPrefs.setGeofenceState(false);
+                sPrefs.setGeofenceEnabled(false);
                 return true;
             }
         });
@@ -88,9 +94,9 @@ public class PreferencesScreen extends PreferenceActivity {
         mGeofenceSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if (mPrefs.getGeofenceHere() && newValue.equals(false))
+                if (sPrefs.getGeofenceHere() && newValue.equals(false))
                 {
-                    mPrefs.setGeofenceHere(false);
+                    sPrefs.setGeofenceHere(false);
                     setGeofenceHereDesc(false);
                 }
                 return true;
@@ -107,7 +113,8 @@ public class PreferencesScreen extends PreferenceActivity {
 
     private void setGeofenceSwitchTitle() {
         String geo_on = getResources().getString(R.string.geofencing_on);
-        mGeofenceSwitch.setTitle(String.format(geo_on,mPrefs.getLat(),mPrefs.getLon()));
+        Location coord = sPrefs.getGeofenceLocation();
+        mGeofenceSwitch.setTitle(String.format(geo_on, coord.getLatitude(), coord.getLongitude()));
     }
 
     private void setNicknamePreferenceTitle(String nickname) {
