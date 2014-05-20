@@ -14,8 +14,6 @@ import android.util.Log;
 import org.mozilla.mozstumbler.SharedConstants;
 import org.mozilla.mozstumbler.service.Prefs;
 
-import org.mozilla.mozstumbler.preferences.Prefs;
-
 public class GPSScanner implements LocationListener {
     public static final String ACTION_BASE = SharedConstants.ACTION_NAMESPACE + ".GPSScanner.";
     public static final String ACTION_GPS_UPDATED = ACTION_BASE + "GPS_UPDATED";

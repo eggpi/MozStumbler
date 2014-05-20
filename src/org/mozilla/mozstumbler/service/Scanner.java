@@ -1,7 +1,6 @@
 package org.mozilla.mozstumbler.service;
 
 import android.content.Context;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellScanner;
 import org.mozilla.mozstumbler.service.scanners.GPSScanner;
@@ -48,7 +47,7 @@ class Scanner {
     mWifiScanner.stop();
     mCellScanner.stop();
 
-     mIsScanning = false;
+    mIsScanning = false;
   }
 
   boolean isScanning() {

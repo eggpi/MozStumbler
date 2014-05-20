@@ -37,7 +37,8 @@ final class Updater {
     private Updater() {
     }
 
-    static void checkForUpdates(final Activity activity) {
+    public static void checkForUpdates(final Activity activity) {
+    public static void checkForUpdates(final Context context) {
         new AsyncTask<Void, Void, String>() {
             @Override
             public String doInBackground(Void... params) {
