@@ -1,5 +1,6 @@
 package org.mozilla.mozstumbler.client;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -36,6 +37,7 @@ final class Updater {
     private Updater() {
     }
 
+    public static void checkForUpdates(final Activity activity) {
     public static void checkForUpdates(final Context context) {
         new AsyncTask<Void, Void, String>() {
             @Override
@@ -71,13 +73,13 @@ final class Updater {
 
             @Override
             public void onPostExecute(String latestVersion) {
-                String installedVersion = PackageUtils.getAppVersion(context);
+                String installedVersion = PackageUtils.getAppVersion(activity);
 
                 Log.d(LOGTAG, "Installed version: " + installedVersion);
                 Log.d(LOGTAG, "Latest version: " + latestVersion);
 
-                if (isVersionGreaterThan(latestVersion, installedVersion)) {
-                    showUpdateDialog(context, installedVersion, latestVersion);
+                if (isVersionGreaterThan(latestVersion, installedVersion) && !activity.isFinishing()) {
+                    showUpdateDialog(activity, installedVersion, latestVersion);
                 }
             }
         }.execute();

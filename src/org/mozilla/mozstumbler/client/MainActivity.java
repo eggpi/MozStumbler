@@ -26,6 +26,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -76,14 +77,14 @@ public final class MainActivity extends FragmentActivity {
                 intentFilter.addAction(GPSScanner.ACTION_GPS_UPDATED);
                 intentFilter.addAction(MainActivity.ACTION_UNPAUSE_SCANNING);
                 intentFilter.addAction(MainActivity.ACTION_UPDATE_UI);
-                registerReceiver(this, intentFilter);
+                LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(this, intentFilter);
                 mReceiverIsRegistered = true;
             }
         }
 
         public void unregister() {
             if (mReceiverIsRegistered) {
-                unregisterReceiver(this);
+                LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(this);
                 mReceiverIsRegistered = false;
             }
         }
@@ -319,7 +320,10 @@ public final class MainActivity extends FragmentActivity {
                 startActivity(new Intent(getApplication(), PreferencesScreen.class));
                 return true;
             case R.id.action_view_leaderboard:
-                Intent openLeaderboard = new Intent(Intent.ACTION_VIEW, Uri.parse(LEADERBOARD_URL));
+                Uri.Builder builder = Uri.parse(LEADERBOARD_URL).buildUpon();
+                builder.fragment(mPrefs.getNickname());
+                Uri leaderboardUri = builder.build();
+                Intent openLeaderboard = new Intent(Intent.ACTION_VIEW, leaderboardUri);
                 startActivity(openLeaderboard);
                 return true;
             case R.id.action_test_mls:

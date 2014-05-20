@@ -47,7 +47,7 @@ class Scanner {
     mWifiScanner.stop();
     mCellScanner.stop();
 
-     mIsScanning = false;
+    mIsScanning = false;
   }
 
   boolean isScanning() {

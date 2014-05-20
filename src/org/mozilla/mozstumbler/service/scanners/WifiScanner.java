@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -171,6 +172,6 @@ public class WifiScanner extends BroadcastReceiver {
         Intent i = new Intent(ACTION_WIFIS_SCANNED);
         i.putParcelableArrayListExtra(ACTION_WIFIS_SCANNED_ARG_RESULTS, scanResults);
         i.putExtra(ACTION_WIFIS_SCANNED_ARG_TIME, System.currentTimeMillis());
-        mContext.sendBroadcast(i);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
     }
 }

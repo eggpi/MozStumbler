@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import org.mozilla.mozstumbler.SharedConstants;
 import org.mozilla.mozstumbler.service.Prefs;
@@ -163,14 +164,14 @@ public class GPSScanner implements LocationListener {
         i.putExtra(Intent.EXTRA_SUBJECT, SUBJECT_NEW_LOCATION);
         i.putExtra(NEW_LOCATION_ARG_LOCATION, location);
         i.putExtra(ACTION_ARG_TIME, System.currentTimeMillis());
-        mContext.sendBroadcast(i);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
     }
 
     private void reportLocationLost() {
         Intent i = new Intent(ACTION_GPS_UPDATED);
         i.putExtra(Intent.EXTRA_SUBJECT, SUBJECT_LOCATION_LOST);
         i.putExtra(ACTION_ARG_TIME, System.currentTimeMillis());
-        mContext.sendBroadcast(i);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
     }
 
     private void reportNewGpsStatus(int fixes, int sats) {
@@ -179,6 +180,6 @@ public class GPSScanner implements LocationListener {
         i.putExtra(NEW_STATUS_ARG_FIXES, fixes);
         i.putExtra(NEW_STATUS_ARG_SATS, sats);
         i.putExtra(ACTION_ARG_TIME, System.currentTimeMillis());
-        mContext.sendBroadcast(i);
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(i);
     }
 }

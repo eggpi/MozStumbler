@@ -2,6 +2,7 @@ package org.mozilla.mozstumbler.service.scanners.cellscanner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,7 +70,7 @@ public class CellScanner {
                 Intent intent = new Intent(ACTION_CELLS_SCANNED);
                 intent.putParcelableArrayListExtra(ACTION_CELLS_SCANNED_ARG_CELLS, cells);
                 intent.putExtra(ACTION_CELLS_SCANNED_ARG_TIME, curTime);
-                mContext.sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
             }
         }, 0, CELL_MIN_UPDATE_TIME);
     }

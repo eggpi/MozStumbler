@@ -13,6 +13,7 @@ import android.net.wifi.ScanResult;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import org.mozilla.mozstumbler.client.MainActivity;
 import org.mozilla.mozstumbler.service.scanners.WifiScanner;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellInfo;
 import org.mozilla.mozstumbler.service.scanners.cellscanner.CellScanner;
+import org.osmdroid.tileprovider.BitmapPool;
 import org.osmdroid.tileprovider.MapTileProviderBasic;
 import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
@@ -116,7 +118,7 @@ public final class MapActivity extends Activity {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WifiScanner.ACTION_WIFIS_SCANNED);
         intentFilter.addAction(CellScanner.ACTION_CELLS_SCANNED);
-        registerReceiver(mReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, intentFilter);
 
         mMap.getController().setZoom(2);
 
@@ -158,7 +160,7 @@ public final class MapActivity extends Activity {
                                 null,
                                 1, 20, 256,
                                 ".png",
-                                BuildConfig.TILE_SERVER_URL);
+                                new String[] { BuildConfig.TILE_SERVER_URL });
     }
 
     private static TilesOverlay CoverageTilesOverlay(Context context) {
@@ -167,7 +169,7 @@ public final class MapActivity extends Activity {
                 null,
                 1, 13, 256,
                 ".png",
-                COVERAGE_URL);
+                new String[] { COVERAGE_URL });
         coverageTileProvider.setTileSource(coverageTileSource);
         final TilesOverlay coverageTileOverlay = new TilesOverlay(coverageTileProvider,context);
         coverageTileOverlay.setLoadingBackgroundColor(Color.TRANSPARENT);
@@ -242,9 +244,8 @@ public final class MapActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
-        Context context = getApplicationContext();
         Intent i = new Intent(MainActivity.ACTION_UNPAUSE_SCANNING);
-        context.sendBroadcast(i);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(i);
         Log.d(LOGTAG, "onStart");
     }
 
@@ -254,8 +255,9 @@ public final class MapActivity extends Activity {
 
         Log.d(LOGTAG, "onStop");
         mMap.getTileProvider().clearTileCache();
+        BitmapPool.getInstance().clearBitmapPool();
         if (mReceiver != null) {
-            unregisterReceiver(mReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
             mReceiver = null;
         }
     }

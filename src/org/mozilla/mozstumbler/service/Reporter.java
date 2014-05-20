@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.Location;
 import android.net.wifi.ScanResult;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import java.util.List;
@@ -48,7 +49,7 @@ final class Reporter extends BroadcastReceiver {
         intentFilter.addAction(WifiScanner.ACTION_WIFIS_SCANNED);
         intentFilter.addAction(CellScanner.ACTION_CELLS_SCANNED);
         intentFilter.addAction(GPSScanner.ACTION_GPS_UPDATED);
-        mContext.registerReceiver(this, intentFilter);
+        LocalBroadcastManager.getInstance(mContext).mContext.registerReceiver(this, intentFilter);
 
         TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
         mPhoneType = tm.getPhoneType();
@@ -65,7 +66,7 @@ final class Reporter extends BroadcastReceiver {
     void shutdown() {
         Log.d(LOGTAG, "shutdown");
         flush();
-        mContext.unregisterReceiver(this);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(this);
     }
 
     private void receivedWifiMessage(Intent intent) {
