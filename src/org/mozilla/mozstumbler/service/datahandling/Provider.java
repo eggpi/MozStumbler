@@ -65,27 +65,21 @@ public class Provider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        final List<String> limitQueryParameters = uri.getQueryParameters("limit");
+        String limit = limitQueryParameters.isEmpty() ? null :
+                       limitQueryParameters.get(limitQueryParameters.size() - 1);
         Cursor cursor;
-        final List<String> limitQueryParameters;
-        String limit;
-        String id;
-
-        limitQueryParameters = uri.getQueryParameters("limit");
-        limit = limitQueryParameters.isEmpty() ? null : limitQueryParameters.get(limitQueryParameters.size() - 1);
-
         switch (sUriMatcher.match(uri)) {
             case REPORTS:
                 cursor = getReports(projection, selection, selectionArgs, sortOrder, limit);
                 break;
             case REPORTS_ID:
-                id = uri.getLastPathSegment();
+                String id = uri.getLastPathSegment();
                 if (id == null) {
                     throw new IllegalArgumentException("report ID not defined");
                 }
-                selection = DatabaseUtilsCompat.concatenateWhere(selection,
-                        BaseColumns._ID + "=?");
-                selectionArgs = DatabaseUtilsCompat.appendSelectionArgs(selectionArgs,
-                        new String[]{id});
+                selection = DatabaseUtilsCompat.concatenateWhere(selection, BaseColumns._ID + "=?");
+                selectionArgs = DatabaseUtilsCompat.appendSelectionArgs(selectionArgs, new String[]{id});
                 cursor = getReports(projection, selection, selectionArgs, sortOrder, limit);
                 break;
             case REPORTS_SUMMARY:
