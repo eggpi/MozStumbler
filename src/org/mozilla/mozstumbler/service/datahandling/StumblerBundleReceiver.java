@@ -1,4 +1,4 @@
-package org.mozilla.mozstumbler.service;
+package org.mozilla.mozstumbler.service.datahandling;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
@@ -8,22 +8,12 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.mozilla.mozstumbler.service.StumblerBundle;
-import org.mozilla.mozstumbler.DatabaseContract;
 
-public final class StumblerBundleReceiver extends BroadcastReceiver {
+public final class StumblerBundleReceiver {
     private static final String LOGTAG = StumblerBundleReceiver.class.getName();
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.d(LOGTAG, "onReceive!");
-
-        StumblerBundle bundle = intent.getParcelableExtra("StumblerBundle");
-        onReceiveStumblerBundle(context, bundle);
-    }
-
-    private void onReceiveStumblerBundle(Context context, StumblerBundle bundle) {
-        ContentValues values = new ContentValues(10);
+    public void handleBundle(Context context, StumblerBundle bundle) {
+        ContentValues values = new ContentValues();
 
         JSONObject mlsObj = null;
         try {

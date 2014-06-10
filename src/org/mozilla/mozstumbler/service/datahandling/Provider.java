@@ -1,4 +1,4 @@
-package org.mozilla.mozstumbler.service;
+package org.mozilla.mozstumbler.service.datahandling;
 
 import android.content.ContentProvider;
 import android.content.ContentProviderOperation;
@@ -14,12 +14,13 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.v4.database.DatabaseUtilsCompat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import static org.mozilla.mozstumbler.DatabaseContract.CONTENT_AUTHORITY;
-import static org.mozilla.mozstumbler.DatabaseContract.Reports;
-import static org.mozilla.mozstumbler.DatabaseContract.Stats;
+import static org.mozilla.mozstumbler.service.datahandling.DatabaseContract.CONTENT_AUTHORITY;
+import static org.mozilla.mozstumbler.service.datahandling.DatabaseContract.Reports;
+import static org.mozilla.mozstumbler.service.datahandling.DatabaseContract.Stats;
 
 public class Provider extends ContentProvider {
     private static final String LOGTAG = Provider.class.getName();
@@ -64,27 +65,21 @@ public class Provider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        final List<String> limitQueryParameters = uri.getQueryParameters("limit");
+        String limit = limitQueryParameters.isEmpty() ? null :
+                       limitQueryParameters.get(limitQueryParameters.size() - 1);
         Cursor cursor;
-        final List<String> limitQueryParameters;
-        String limit;
-        String id;
-
-        limitQueryParameters = uri.getQueryParameters("limit");
-        limit = limitQueryParameters.isEmpty() ? null : limitQueryParameters.get(limitQueryParameters.size() - 1);
-
         switch (sUriMatcher.match(uri)) {
             case REPORTS:
                 cursor = getReports(projection, selection, selectionArgs, sortOrder, limit);
                 break;
             case REPORTS_ID:
-                id = uri.getLastPathSegment();
+                String id = uri.getLastPathSegment();
                 if (id == null) {
                     throw new IllegalArgumentException("report ID not defined");
                 }
-                selection = DatabaseUtilsCompat.concatenateWhere(selection,
-                        BaseColumns._ID + "=?");
-                selectionArgs = DatabaseUtilsCompat.appendSelectionArgs(selectionArgs,
-                        new String[]{id});
+                selection = DatabaseUtilsCompat.concatenateWhere(selection, BaseColumns._ID + "=?");
+                selectionArgs = DatabaseUtilsCompat.appendSelectionArgs(selectionArgs, new String[]{id});
                 cursor = getReports(projection, selection, selectionArgs, sortOrder, limit);
                 break;
             case REPORTS_SUMMARY:

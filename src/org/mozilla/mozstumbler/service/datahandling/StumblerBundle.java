@@ -1,4 +1,4 @@
-package org.mozilla.mozstumbler.service;
+package org.mozilla.mozstumbler.service.datahandling;
 
 import android.location.Location;
 import android.net.wifi.ScanResult;
@@ -19,6 +19,12 @@ public final class StumblerBundle implements Parcelable {
     private final Location mGpsPosition;
     private final Map<String, ScanResult> mWifiData;
     private final Map<String, CellInfo> mCellData;
+
+    public void wasSent() {
+        mGpsPosition.setTime(System.currentTimeMillis());
+        mWifiData.clear();
+        mCellData.clear();
+    }
 
     @Override
     public int describeContents() {
